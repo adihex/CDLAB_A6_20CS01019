@@ -1,5 +1,6 @@
 import os
 from collections import Counter
+
 import pyfiglet
 import termtables as tt
 
@@ -11,7 +12,7 @@ def append_dot(a):
 
 def compress_name(name: str):
     res = Counter(name)
-    comp = ''
+    comp = ""
     for r in res:
         comp += r + str(res[r])
 
@@ -23,7 +24,7 @@ def save_file(final_string, grammar, name):
     if not os.path.exists(directory):
         os.makedirs(directory)
 
-    with open("parsable_strings/{0}/{1}.txt".format(grammar, name), 'w') as f:
+    with open("parsable_strings/{0}/{1}.txt".format(grammar, name), "w") as f:
         f.write(final_string)
 
 
@@ -74,12 +75,12 @@ def goto1(x1):
 def get_terminals(gram):
     terms = set()
     for p in gram:
-        x1 = p.split('->')
+        x1 = p.split("->")
         for t in x1[1].strip():
-            if not t.isupper() and t != '.' and t != '':
+            if not t.isupper() and t != "." and t != "":
                 terms.add(t)
 
-    terms.add('$')
+    terms.add("$")
 
     return terms
 
@@ -87,7 +88,7 @@ def get_terminals(gram):
 def get_non_terminals(gram):
     terms = set()
     for p in gram:
-        x1 = p.split('->')
+        x1 = p.split("->")
         for t in x1[1].strip():
             if t.isupper():
                 terms.add(t)
@@ -104,7 +105,7 @@ def get_list(graph, state):
     return final
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     result = pyfiglet.figlet_format("LR (0) Parsing", font="epic")
     print(result)
 
@@ -115,7 +116,7 @@ if __name__ == '__main__':
     num = int(input("Enter grammar number: "))
     print("\n")
 
-    with open("grammar/" + str(num) + ".txt", 'r') as fp:
+    with open("grammar/" + str(num) + ".txt", "r") as fp:
         for i in fp.readlines():
             prod.append(i.strip())
 
@@ -173,8 +174,8 @@ if __name__ == '__main__':
             lst = get_list(dfa_prod, i)
             samp = {}
             for j in lst:
-                s = j.split()[1].split('->')[1]
-                search = s[s.index('.') + 1]
+                s = j.split()[1].split("->")[1]
+                search = s[s.index(".") + 1]
                 samp[search] = state_numbers[str(dfa_prod[j])]
 
             if samp != {}:
@@ -186,43 +187,43 @@ if __name__ == '__main__':
     table = []
 
     term = sorted(list(get_terminals(prod)))
-    header = [''] * (len(term) + 1)
-    header[(len(term) + 1) // 2] = 'Action'
+    header = [""] * (len(term) + 1)
+    header[(len(term) + 1) // 2] = "Action"
 
     non_term = sorted(list(get_non_terminals(prod)))
 
-    header2 = [''] * len(non_term)
-    header2[(len(non_term)) // 2] = 'Goto'
+    header2 = [""] * len(non_term)
+    header2[(len(non_term)) // 2] = "Goto"
 
-    table.append([''] + term + non_term)
+    table.append([""] + term + non_term)
 
     table_dic = {}
 
     for i in range(len(c)):
-        data = [''] * (len(term) + len(non_term))
+        data = [""] * (len(term) + len(non_term))
         samp = {}
 
         # Action
         try:
             for j in dfa[i]:
-                if not j.isupper() and j != '' and j != '.':
+                if not j.isupper() and j != "" and j != ".":
                     ind = term.index(j)
-                    data[ind] = 'S' + str(dfa[i][j])
-                    samp[term[ind]] = 'S' + str(dfa[i][j])
+                    data[ind] = "S" + str(dfa[i][j])
+                    samp[term[ind]] = "S" + str(dfa[i][j])
 
         except Exception:
             if i != 1:
                 s = list(c[i][0])
-                s.remove('.')
+                s.remove(".")
                 s = "".join(s)
-                lst = [i] + ['r' + str(prod_num[s])] * len(term)
-                lst += [''] * len(non_term)
+                lst = [i] + ["r" + str(prod_num[s])] * len(term)
+                lst += [""] * len(non_term)
                 table.append(lst)
                 for j in term:
-                    samp[j] = 'r' + str(prod_num[s])
+                    samp[j] = "r" + str(prod_num[s])
             else:
-                lst = [i] + [''] * (len(term) + len(non_term))
-                lst[-1] = 'Accept'
+                lst = [i] + [""] * (len(term) + len(non_term))
+                lst[-1] = "Accept"
                 table.append(lst)
 
         # Goto
@@ -239,11 +240,16 @@ if __name__ == '__main__':
             pass
 
         if samp == {}:
-            table_dic[i] = {'$': 'Accept'}
+            table_dic[i] = {"$": "Accept"}
         else:
             table_dic[i] = samp
 
-    final_table = tt.to_string(data=table, header=header + header2, style=tt.styles.ascii_thin_double, padding=(0, 1))
+    final_table = tt.to_string(
+        data=table,
+        header=header + header2,
+        style=tt.styles.ascii_thin_double,
+        padding=(0, 1),
+    )
 
     print("\n")
     print(final_table)
@@ -251,7 +257,7 @@ if __name__ == '__main__':
 
     # Parse String
     string = input("Enter the string to be parsed: ")
-    string += '$'
+    string += "$"
     print("\n")
 
     stack = [0]
@@ -259,7 +265,7 @@ if __name__ == '__main__':
 
     # print(table_dic)
 
-    header = ['Process', 'Look Ahead', 'Symbol', 'Stack']
+    header = ["Process", "Look Ahead", "Symbol", "Stack"]
     data = []
 
     i = 0
@@ -279,27 +285,42 @@ if __name__ == '__main__':
                 tab = table_dic[stack[-2]]
                 tab_i = tab[stack[-1]]  # S or r
 
-            if tab_i == 'Accept':
-                data.append(['Action({0}, {1}) = {2}'.format(stack[-1], string[i], tab_i), i, string[i], str(stack)])
+            if tab_i == "Accept":
+                data.append(
+                    [
+                        "Action({0}, {1}) = {2}".format(stack[-1], string[i], tab_i),
+                        i,
+                        string[i],
+                        str(stack),
+                    ]
+                )
                 accepted = True
                 break
             else:
-                if tab_i[0] == 'S' and not str(stack[-1]).isupper():
-                    lst = ['Action({0}, {1}) = {2}'.format(stack[-1], string[i], tab_i), i, string[i]]
+                if tab_i[0] == "S" and not str(stack[-1]).isupper():
+                    lst = [
+                        "Action({0}, {1}) = {2}".format(stack[-1], string[i], tab_i),
+                        i,
+                        string[i],
+                    ]
                     stack.append(string[i])
                     stack.append(prod_i)
                     lst.append(str(stack))
                     data.append(lst)
                     i += 1
-                elif tab_i[0] == 'r':
-                    lst = ['Action({0}, {1}) = {2}'.format(stack[-1], string[i], tab_i), i, string[i]]
+                elif tab_i[0] == "r":
+                    lst = [
+                        "Action({0}, {1}) = {2}".format(stack[-1], string[i], tab_i),
+                        i,
+                        string[i],
+                    ]
                     x = None
                     for i1 in prod_num:
                         if prod_num[i1] == int(tab_i[1]):
                             x = i1
                             break
 
-                    length = 2 * (len(x.split('->')[1]))
+                    length = 2 * (len(x.split("->")[1]))
                     for _ in range(length):
                         stack.pop()
 
@@ -307,7 +328,11 @@ if __name__ == '__main__':
                     lst.append(str(stack))
                     data.append(lst)
                 else:
-                    lst = ['goto({0}, {1}) = {2}'.format(stack[-2], stack[-1], tab_i), i, string[i]]
+                    lst = [
+                        "goto({0}, {1}) = {2}".format(stack[-2], stack[-1], tab_i),
+                        i,
+                        string[i],
+                    ]
                     stack.append(int(tab_i))
                     lst.append(str(stack))
                     data.append(lst)
@@ -316,7 +341,9 @@ if __name__ == '__main__':
             break
 
     try:
-        parsing_table = tt.to_string(data=data, header=header, style=tt.styles.ascii_thin_double, padding=(0, 1))
+        parsing_table = tt.to_string(
+            data=data, header=header, style=tt.styles.ascii_thin_double, padding=(0, 1)
+        )
 
         if accepted:
             string = string[:-1]
@@ -324,8 +351,10 @@ if __name__ == '__main__':
             compressed_name = compress_name(string)
             save_file(parsing_table, num, compressed_name)
 
-            print("The string {0} is parsable! Please find the parsing table in "
-                  "parsable_strings/{1}/{2}.txt.".format(string, num, compressed_name))
+            print(
+                "The string {0} is parsable! Please find the parsing table in "
+                "parsable_strings/{1}/{2}.txt.".format(string, num, compressed_name)
+            )
         else:
             print("The string {0} is not parsable!".format(string))
     except Exception:
